@@ -1,29 +1,87 @@
-var socket = io();
+var socket = io('http://localhost:5000');
 
 const name_caht = document.getElementById('name_chat')
 const chat = document.getElementById('chat')
 const nameUser = document.getElementById('nameUser');
 const miId = document.getElementById('jnh');
+const btnBuscar = document.getElementById('btnBuscar');
 
 var name = nameUser.dataset.name
 var mi_Id = miId.dataset.id
 var meme;
 var idRoom;
 
-//traer a todos los usuarios
-socket.on('usuarios', datas => {
-    var data = datas.user;
-    for(var i = data.length-1; i >=0; i--){
-        if (name != data[i].nombre) {
-            name_caht.innerHTML += `
-            <div  class="ubs">
-                <a class="chat_name" id="a" data-users="${data[i]._id}" href="/chat">
-                    ${data[i].nombre}
-                </a>
-            </div>`
-        }
-    }
-})
+
+var buscarUser = () => {
+    var textB = inpBuscar.value.toLowerCase();
+    fetch('/users')
+        .then(res => res.json())
+        .then(datas => {
+            name_caht.innerHTML = '';
+            for (let data of datas) {
+                let nameb = data.nombre.toLowerCase();
+                if (name != data.nombre) {
+                    if (nameb.indexOf(textB) !== -1) {
+                        name_caht.innerHTML += `
+                        <div  class="ubs">
+                            <a class="chat_name" id="a" data-users="${data._id}" href="/chat">
+                                ${data.nombre}
+                            </a>
+                        </div>`
+                    }
+                }
+            }
+            if (name_caht.innerHTML === '') {
+                name_caht.innerHTML += '<div class="ubs">Usuario no encontrado...</div>'
+            }
+        })
+}
+
+
+// traer a todos los usuarios
+function getUser(){
+    var textB = inpBuscar.value.toLowerCase();
+
+    fetch('/users')
+        .then(res => res.json())
+        .then(datas => {
+            name_caht.innerHTML = ''
+            var data = datas;
+
+            for (var i = data.length - 1; i >= 0; i--) {
+                
+                if (name != data[i].nombre) {
+                    for (var c = data[i].rooms.length - 1; c >= 0; c--) {
+                        let nameB = data[i].nombre.toLowerCase();
+
+                        if (nameB.indexOf(textB) !== -1) {
+                            if (data[i].rooms[c].myId === mi_Id || data[i].rooms[c].youId === mi_Id) {
+
+                                var message = data[i].rooms[c].message.pop();
+                                name_caht.innerHTML += `
+                                    <div  class="ubs">
+                                        <a class="chat_name" id="a" data-users="${data[i]._id}" href="/chat">
+                                            ${data[i].nombre}
+                                            <samp>${message.msg}</samp>
+                                        </a>
+                                    </div>`
+                            }
+                        }
+                    }
+                }
+            }
+            if ( name_caht.innerHTML === '') {
+                name_caht.innerHTML += '<div class="ubs">Usuario no encontrado...</div>'
+            }
+    	})
+}
+
+btnBuscar.addEventListener('click',getUser)
+inpBuscar.addEventListener('keyup',getUser)
+inpBuscar.addEventListener('keyup',buscarUser)
+btnBuscar.addEventListener('click',buscarUser)
+
+getUser()
 
 // evento click para seleccional el usuario para chatear
 name_caht.addEventListener('click' , (e) => {
@@ -68,7 +126,6 @@ function getMessage(data){
     const boxU = document.getElementById('jkws');
 
     data.message.forEach(msj => {
-        console.log(msj.date);
         var y = new Date(msj.date)
         
         if(msj.myIdMsg == meme){
@@ -163,14 +220,16 @@ form_chat.addEventListener('submit', (e) => {
         msj:text_chat,
         idRoom: idRoom
     }
-
+    
     fetch('/message/'+ JSON.stringify(dat), {
         method:'post',
         body: JSON.stringify(dat)
     })
     .then(resp => resp.json())
     .then(datas => {
-        console.log('');
+        getUser()
+        console.log('new message');
+        
     })
     form_chat.reset();
     var x = boxU.scrollHeight

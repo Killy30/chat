@@ -62,6 +62,11 @@ app.get('/chat', estaAutenticado, (req, res) => {
     io.emit('nuevo-usuario', user)
 })
 
+app.get('/users', async(req, res) => {
+    const users = await User.find({}).populate('rooms');
+    res.json(users)
+})
+
 app.post('/message/:id', async(req, res) => {
     let data = JSON.parse(req.params.id);
 
@@ -131,6 +136,7 @@ io.on('connection', async(socket) => {
     console.log('chat conectada');
     const user = await User.find({}).populate('rooms')
     const room = await Rooms.find({}).populate('user')
+    console.log(socket.handshake.headers.cookie);
     
     socket.emit('usuarios', {user,room})
 
