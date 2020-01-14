@@ -25,7 +25,12 @@ var buscarUser = () => {
                         name_caht.innerHTML += `
                         <div  class="ubs">
                             <a class="chat_name" id="a" data-users="${data._id}" href="/chat">
-                                ${data.nombre}
+                                <div class="userFotoSelect" id="a" data-users="${data._id}"></div>
+                                <div class="contentUserSelect" id="a" data-users="${data._id}">
+                                    <p class="userNameSelect" id="a" data-users="${data._id}">
+                                        ${data.nombre}
+                                    </p>
+                                </div>
                             </a>
                         </div>`
                     }
@@ -61,8 +66,15 @@ function getUser(){
                                 name_caht.innerHTML += `
                                     <div  class="ubs">
                                         <a class="chat_name" id="a" data-users="${data[i]._id}" href="/chat">
-                                            ${data[i].nombre}
-                                            <samp>${message.msg}</samp>
+                                            <div class="userFotoSelect" id="a" data-users="${data[i]._id}"></div>
+                                            <div class="contentUserSelect" id="a" data-users="${data[i]._id}">
+                                                <p class="userNameSelect" id="a" data-users="${data[i]._id}">
+                                                    ${data[i].nombre}
+                                                </p>
+                                                <samp class="sampMSG" id="a" data-users="${data[i]._id}">
+                                                    ${message.msg}
+                                                </samp>
+                                            </div>
                                         </a>
                                     </div>`
                             }
@@ -88,40 +100,55 @@ name_caht.addEventListener('click' , (e) => {
     e.preventDefault()
     if (e.target.classList.contains('chat_name')) {
         e.preventDefault()
-        
-        const id = e.target.dataset.users;
-        var ids = {myId: mi_Id, userId: id}
-        meme = id;
-        fetch('/chat/'+ JSON.stringify(ids), {
-            method:'post',
-            body: JSON.stringify(ids)
-         })
-        .then(res => res.json())
-        .then(data => {
-            idRoom = data.idRoom;
-            chat.innerHTML = `
-            <div class="box">
-                <div class="header">
-                    <div class="fn">
-                        <div class="fotoUser"></div>
-                        <p>${data.user.nombre}</p>
-                    </div>
-                    <div class="ue">
-                        <samp>${data.user.email}</samp>
-                    </div>
-                </div>
-                <div id="jkws" class="boxchat"> </div>
-            </div>`
-            getMessage(data.idRoom)
-            socket.emit('user-to-join', {
-                roomUser: data.idRoom._id,
-                userId: mi_Id
-            })
-        })
+        userToChat(e)
+    }else if (e.target.classList.contains('sampMSG')) {
+        e.preventDefault()
+        userToChat(e)
+    }else if (e.target.classList.contains('userNameSelect')) {
+        e.preventDefault()
+        userToChat(e)
+    }else if (e.target.classList.contains('userFotoSelect')) {
+        e.preventDefault()
+        userToChat(e)
+    }else if (e.target.classList.contains('contentUserSelect')) {
+        e.preventDefault()
+        userToChat(e)
     }
 })
 
-// funcion para conseguir todos los mensajes en el servidor y pintarlos en la pantalla
+var userToChat = (e) =>{
+    const id = e.target.dataset.users;
+    var ids = {myId: mi_Id, userId: id}
+    meme = id;
+    fetch('/chat/'+ JSON.stringify(ids), {
+        method:'post',
+        body: JSON.stringify(ids)
+     })
+    .then(res => res.json())
+    .then(data => {
+        idRoom = data.idRoom;
+        chat.innerHTML = `
+        <div class="box">
+            <div class="header">
+                <div class="fn">
+                    <div class="fotoUser"></div>
+                    <p>${data.user.nombre}</p>
+                </div>
+                <div class="ue">
+                    <samp>${data.user.email}</samp>
+                </div>
+            </div>
+            <div id="jkws" class="boxchat"> </div>
+        </div>`
+        getMessage(data.idRoom)
+        socket.emit('user-to-join', {
+            roomUser: data.idRoom._id,
+            userId: mi_Id
+        })
+    })
+}
+
+// funcion para conseguir todos los mensajes en el servidor y pintarlos en pantalla
 function getMessage(data){
     const boxU = document.getElementById('jkws');
 
