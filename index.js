@@ -9,6 +9,7 @@ const flash = require('connect-flash');
 const path = require('path');
 const bodyParser = require('body-parser')
 const Rooms = require('./models/chat')
+const morgan = require('morgan')
 
 require('./models/database')
 require('./passport/local-aut');
@@ -17,6 +18,7 @@ app.set('port', process.env.PORT || 5000)
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
+app.use(morgan('dev'))
 app.use(express.urlencoded({extended: false}));
 app.use(express.json())
 app.use(bodyParser.json())
@@ -59,7 +61,6 @@ app.post('/registrar',  passport.authenticate('local-signup', {
 app.get('/chat', estaAutenticado, (req, res) => {
     var user = req.user;
     res.render('room', { user })
-    io.emit('nuevo-usuario', user)
 })
 
 app.get('/users', async(req, res) => {

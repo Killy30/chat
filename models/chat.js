@@ -8,7 +8,6 @@ const newRoom = new Schema({
     }],
     myId:       { type: Schema.Types.ObjectId, ref: 'User' },
     youId:      {type: Schema.Types.ObjectId, ref: 'User' }
-
 })
 
 

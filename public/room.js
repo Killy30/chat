@@ -1,4 +1,4 @@
-var socket = io('http://localhost:5000');
+var socket = io();
 
 const name_caht = document.getElementById('name_chat')
 const chat = document.getElementById('chat')
@@ -63,17 +63,25 @@ function getUser(){
                             if (data[i].rooms[c].myId === mi_Id || data[i].rooms[c].youId === mi_Id) {
 
                                 var message = data[i].rooms[c].message.pop();
+                                console.log(message);
+                                const date = new Date(message.date)
+                                
                                 name_caht.innerHTML += `
                                     <div  class="ubs">
                                         <a class="chat_name" id="a" data-users="${data[i]._id}" href="/chat">
                                             <div class="userFotoSelect" id="a" data-users="${data[i]._id}"></div>
                                             <div class="contentUserSelect" id="a" data-users="${data[i]._id}">
-                                                <p class="userNameSelect" id="a" data-users="${data[i]._id}">
-                                                    ${data[i].nombre}
-                                                </p>
-                                                <samp class="sampMSG" id="a" data-users="${data[i]._id}">
+                                                <div class="nd">
+                                                    <p class="userNameSelect" id="a" data-users="${data[i]._id}">
+                                                        ${data[i].nombre}
+                                                    </p>
+                                                    <samp class="dateS" data-users="${data[i]._id}">
+                                                        ${date.getHours()}:${date.getMinutes()}
+                                                    </samp>
+                                                </div>
+                                                <span class="sampMSG" id="a" data-users="${data[i]._id}">
                                                     ${message.msg}
-                                                </samp>
+                                                </span>
                                             </div>
                                         </a>
                                     </div>`
@@ -113,6 +121,9 @@ name_caht.addEventListener('click' , (e) => {
     }else if (e.target.classList.contains('contentUserSelect')) {
         e.preventDefault()
         userToChat(e)
+    }else if (e.target.classList.contains('dateS')) {
+        e.preventDefault()
+        userToChat(e)
     }
 })
 
@@ -127,6 +138,8 @@ var userToChat = (e) =>{
     .then(res => res.json())
     .then(data => {
         idRoom = data.idRoom;
+        console.log(idRoom);
+        
         chat.innerHTML = `
         <div class="box">
             <div class="header">
