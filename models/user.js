@@ -5,7 +5,9 @@ const userSchema = new Schema({
     nombre: {type: String},
     email:  {type: String},
     password: {type: String},
-    rooms: [{type: Schema.Types.ObjectId, ref: 'Rooms'}]
+    user_number: {type: String},
+    rooms: [{type: Schema.Types.ObjectId, ref: 'rooms'}],
+    contacts: [{type: Schema.Types.ObjectId, ref: 'contact'}]
 })
 
 userSchema.methods.encryptPassword = (password) => {

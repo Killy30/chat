@@ -1,0 +1,70 @@
+
+<div class="bfdx">
+    <div class="welcome">
+        <div>
+            <div class="icon_card">
+                <span class="material-symbols-outlined">forum</span>
+            </div>
+            <div >
+                <p class="fs-6">Envia y recive mensajes de todas partes del mundo.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="box_fgd hide">
+        <div class="chat_box_contain"></div>
+        <div class="chatboxfooter">
+            <div class="form_text_msg">
+                <form class="d-flex align-items-center" style="width: 100%;" id="form_data">
+                    <textarea id="text_message" class="" placeholder="Escribe un mensaje"></textarea>
+                    <div class="card_add_file">
+                        <label for="image" class="">
+                            <img src="../icons/file.png" alt="">
+                            <!-- <span class="material-symbols-outlined">file</span> -->
+                        </label>
+                        <input type="file" id="image" name="image" class="add_file" style="display: none;" accept="image/*">
+                    </div>
+                    <div>
+                        <button type="submit" id="btn_send_msg" class="btn btn_send_msg">
+                            <img src="../icons/send.png" alt="">
+                            <!-- <span class="material-symbols-outlined">send</span> -->
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Contacto</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card_alert_modal_xa mb-3"></div>
+                <div>
+                    <form action="">
+                        <input type="text" class="form-control" id="name_ud" placeholder="Nombre">
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btn_updateContact">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+

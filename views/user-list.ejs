@@ -1,0 +1,49 @@
+
+
+<div style="height: 100%;">
+    <div class="card_search">
+        <form action="" style="width: calc(100% - 50px);">
+            <div class="d-flex align-items-center">
+                <span class="material-symbols-outlined me-1">search</span>
+                <input type="text" id="searchUser" class="form-control" placeholder="Search">
+            </div>
+        </form>
+        <button class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <span class="material-symbols-outlined btn_add">person_add</span>
+        </button>
+    </div>
+
+    <div class="card_users_list">
+        <div id="users_list"></div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar contacto</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card_alert_modal_xs mb-3"></div>
+                <div class="form">
+                    <form action="">
+                        <div class="mb-3">
+                            <input type="text" id="name_contact" class="form-control" placeholder="Nombre">
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="number_contact" class="form-control" placeholder="Numero de contacto">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btn_add_contact" class="btn btn-primary">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>

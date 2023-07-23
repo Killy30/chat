@@ -8,10 +8,11 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const path = require('path');
 const bodyParser = require('body-parser')
-const Rooms = require('./models/chat')
+const Rooms = require('./models/room')
 const morgan = require('morgan')
+const multer = require('multer');
 
-require('./models/database')
+require('./config/configDB')
 require('./passport/local-aut');
 
 app.set('port', process.env.PORT || 5000)
@@ -37,120 +38,61 @@ app.use( async(req, res, next) => {
     app.locals.iniciarMessage   = req.flash('iniciarMessage');
     next();
 })
-    
-app.get('/', async (req , res) => {
-    res.render('index')
-})
-
-app.get('/registrar', async (req , res) => {
-    res.render('registro')
-})
-    
-app.post('/', passport.authenticate('local-login', {
-    successRedirect: '/chat',
-    failureRedirect: '/',
-    passReqToCallback: true
-}));
-
-app.post('/registrar',  passport.authenticate('local-signup', {
-    successRedirect: '/chat',
-    failureRedirect: '/registrar',
-    passReqToCallback: true
-}));
-
-app.get('/chat', estaAutenticado, (req, res) => {
-    var user = req.user;
-    res.render('room', { user })
-})
-
-app.get('/users', async(req, res) => {
-    const users = await User.find({}).populate('rooms');
-    res.json(users)
-})
-
-app.post('/message/:id', async(req, res) => {
-    let data = JSON.parse(req.params.id);
-
-    if (data.idRoom != undefined) {
-        const roomId = await Rooms.findOne({_id: data.idRoom})
-        
-        var msj = {
-            myIdMsg:  data.myId,
-            msg:      data.msj
-        }
-        roomId.message.push(msj);
-        await roomId.save();
-        res.json({roomId})
-    }
-})
-
-app.post('/chat/:id',async(req, res) => {
-    var myUser = req.user;
-    var ids = JSON.parse(req.params.id);
-    const user = await User.findOne({_id: ids.userId})
-    
-    const roomId = await Rooms.findOne({ $and:[ 
-        {myId: {$in: [ids.userId, ids.myId] }},
-        {youId: {$in: [ids.userId, ids.myId] }}
-    ]})
-    
-    if (roomId == null) {
-        const newRoom = new Rooms();
-        newRoom.myId = myUser;
-        newRoom.youId = user;
-
-        await newRoom.save();
-        myUser.rooms.push(newRoom);
-        await myUser.save();
-        return res.json({ user:user,  idRoom:newRoom});
-    }
-   
-    const h = user.rooms.includes(roomId._id)
-    const g = myUser.rooms.includes(roomId._id)
-
-    if(h == false) {
-        user.rooms.push(roomId);
-        await user.save();
-        console.log('heyyyy  ',user.rooms);
-        return res.json({ user:user,  idRoom:roomId});
-    }
-            
-    res.json({ user:user,  idRoom:roomId})
-})
-
-app.get('/logout', (req, res, next) => {
-    req.logout();
-    res.redirect('/')
-})
-
-function estaAutenticado(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect('/')
-}
-
 app.use(express.static(path.join(__dirname, 'public')))
+
+const storage = multer.diskStorage({
+    destination: path.join(__dirname, './public/images'),
+    filename: (req, file, cb, filename) =>{
+        cb(null, new Date().getTime() + path.extname(file.originalname));
+    }
+})
+const upload = multer({storage}).single('image')
+
+require('./routes/router')(app)
+
+require('./api/apis')(app)
+
+require('./models/system')(app)
+
 
 //socket
 io.on('connection', async(socket) => {
     console.log('chat conectada');
-    const user = await User.find({}).populate('rooms')
-    const room = await Rooms.find({}).populate('user')
-    console.log(socket.handshake.headers.cookie);
     
-    socket.emit('usuarios', {user,room})
-
-    socket.on('user-to-join', async(ids) =>{
-        const myUser = await User.findOne({_id: ids.userId}).populate('rooms')
-        
-        socket.join(ids.roomUser)
-        socket.to(ids.roomUser).emit('joining', myUser)
+    socket.on('user-join', data => {
+        socket.join(data.id)
     })
 
-    socket.on('nuevo-msj', async(data) =>{
-        const roomMsj = await Rooms.findOne({_id: data.idRoom}).populate('user')
-        socket.to(roomMsj._id).emit('emitiendo', data)
+    app.post('/send-messages', async(req, res) =>{
+        upload(req, res, async(err) =>{
+            if(err){
+                console.log(err);
+            }else{
+                let data = req.body
+
+                const my_user = await User.findOne({_id: data.myUserId})
+                const room = await Rooms.findOne({_id: data.roomId}).populate('xid').populate('yid')
+                let msg = {
+                    myIdMsg: my_user._id,
+                    msg: data.msg,
+                    img: req.file ? `/images/${req.file.filename}` : ''
+                }
+        
+                room.message.push(msg)
+                await room.save()
+                
+                let last_msg = room.message.slice(-1)
+                io.in(room._id).emit('send-messages', {room, last_msg})
+                socket.broadcast.emit('send-msg-to-client', room)
+                res.json({room, last_msg})
+            }
+        })
+    })
+
+    socket.on('user-is-typing', async({roomId})=>{
+        const room = await Rooms.findOne({_id: roomId})
+        let data = {room, notf: 'Esta escribiendo...'}
+        socket.to(roomId).broadcast.emit('user-is-typing', data)
     })
 })
 
