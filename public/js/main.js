@@ -1,6 +1,7 @@
 let socket = io();
 import data from './data.js'
 import alerts from './alerts.js';
+import client_info from './getInfo.js'
 
 const users_list = document.getElementById('users_list')
 const searchUser = document.getElementById('searchUser')
@@ -10,6 +11,19 @@ let globalValue = {
     myUserID:'',
     userSelectedNUM:''
 };
+
+window.addEventListener('load', async function(){
+    console.log(this.navigator);
+    let req = await fetch('/user-information',{
+        method:'POST',
+        body:JSON.stringify(client_info),
+        headers:{
+            'Content-Type': 'application/json'
+        }
+    })
+    let res = await req.json()
+    console.log(res);
+})
 
 async function getUsers(){
     const user = await data.getUserData()
@@ -24,7 +38,7 @@ async function getUsers(){
             users_list.innerHTML += `<div class="bxcv select_chat" data-user_num="${contact.number}">
                 <div class="bxcus select_chat" data-user_num="${contact.number}">
                     <div class="card_img_profile_list select_chat" data-user_num="${contact.number}">
-                        <img src="../icons/person.png" alt="" class="select_chat" data-user_num="${contact.number}">
+                        <img src="../icons/person.png" alt="" class="color_person_blue select_chat" data-user_num="${contact.number}">
                     </div>
                     <div class="ms-2 select_chat" data-user_num="${contact.number}">
                         <p class="user_nickname select_chat" data-user_num="${contact.number}">${contact.name}</p>
@@ -71,7 +85,7 @@ const showListUsers = async() =>{
             <div class="bxcus select_chat" data-index="${i}" data-user_num="${contact ? contact.number :  theclient.user_number}">
                 <div class="card_img_profile_list select_chat" data-index="${i}"
                     data-user_num="${contact ? contact.number :  theclient.user_number}">
-                    <img src="../icons/person.png" alt=""  class="select_chat" data-index="${i}" data-user_num="${contact ? contact.number :  theclient.user_number}">
+                    <img src="../icons/person.png" alt=""  class="color_person_blue select_chat" data-index="${i}" data-user_num="${contact ? contact.number :  theclient.user_number}">
                 </div>
                 <div class="card_nm select_chat" data-index="${i}"
                     data-user_num="${contact ? contact.number :  theclient.user_number}">
@@ -93,8 +107,27 @@ const showListUsers = async() =>{
             </div>
         </div>`
     })
+    show_welcome(users_msg)
 }
 showListUsers()
+
+function show_welcome(users){
+    if(users.length == 0){
+        users_list.innerHTML = `
+            <div class="welcome_mobile">
+                <div>
+                    <div class="icon_card">
+                        <img class="color_person_blue" style="width: 100px;" src="../icons/forum.png" alt="">
+                    </div>
+                    <div >
+                        <p class="fs-5 text-center">Envia y recive mensajes de todas partes del mundo.</p>
+                    </div>
+                </div>
+            </div>
+        `
+    }
+}
+
 
 const postNewContact = async() =>{
     let name = document.getElementById('name_contact')
@@ -162,7 +195,7 @@ const userSelected = async(e) =>{
 
     }
     showBoxChat(user_slct ,the_room, contact)
-    user_info(user_slct, contact)
+    user_info(user_slct, contact, the_room.message)
     hoverUserSelected(i)
 }
 
@@ -178,10 +211,12 @@ const showBoxChat = (user, room, contact) =>{
     chat_box_contain.innerHTML = `<div class="bfdx">
         <div class="chatboxheader">
             <div class="btn_back ">
-                <img src="../icons/arrow.png" alt="" class="back_xv">
+                <img src="../icons/arrow.png" alt="" class="img_class color_person back_xv">
             </div>
             <div class="d-flex">
-                <div class="imguserprofile"><img src="../icons/person.png" alt=""></div>
+                <div class="imguserprofile">
+                    <img class="color_person_blue" src="../icons/person.png" alt="">
+                </div>
                 <div class="card_xnt">
                     <a href="" class="user_name_selected">${contact ? contact.name : user.user_number}</a>
                     <span class="text_user_typping"></span>
@@ -242,26 +277,52 @@ const printLastMessages = (message) =>{
     chatbox_message.scrollBy(0, x);
 }
 
-const user_info = (user, contact) =>{
+const user_info = (user, contact, messaes) =>{
     const _userInfo = document.getElementById('user-info')
 
+    let imgs = messaes.filter(msg => msg.img != '' && msg.img != undefined)
+
     _userInfo.innerHTML = `<div class="info_box">
-        <div class="text-end p-2">
-            <img src="../icons/close.png" alt="" class=" close_card_user_info">
-        </div>
-        <div class="card_imgUserProfile_info">
-            <div class="imgUserProfile_info">
-                <img src="../icons/person.png" alt="">
+        <div class="head_contact">
+            <div class="text-end p-2">
+                <img src="../icons/close.png" alt="" style="width: 30px;" class="close_card_user_info">
+            </div>
+            <div class="card_imgUserProfile_info">
+                <div class="imgUserProfile_info">
+                    <img class="color_person_blue" src="../icons/person.png" alt="">
+                </div>
+            </div>
+            <div>
+                <p class="info_user_name">${contact ? contact.name : user.user_number}</p>
+                <p class="info_user_number">${contact ? user.user_number : user.nombre}</p>
+            </div>
+            <div class="text-center">
+                <button type="button" id="btn_open_ud" class="btn text-primary open_modal_update" data-number="${user.user_number}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    ${contact ? 'Editar contacto' : 'Agregar contacto'}
+                </button>
             </div>
         </div>
-        <div>
-            <p class="info_user_name">${contact ? contact.name : user.user_number}</p>
-            <p class="info_user_number">${contact ? user.user_number : user.nombre}</p>
-        </div>
-        <div class="text-center">
-            <button type="button" id="btn_open_ud" class="btn text-primary open_modal_update" data-number="${user.user_number}" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                ${contact ? 'Editar contacto' : 'Agregar contacto'}
-            </button>
+
+        <div class="body_contact">
+            <div>
+                <div>
+                    <span class="text-secondary">Email:</span>
+                    <p class="text-primary-emphasis">${user.email}</p>
+                </div>
+                <div>
+                    <span class="text-secondary">Nombre:</span>
+                    <p class="text-primary-emphasis">${user.nombre}</p>
+                </div>
+            </div>
+            <div class="galery">
+                ${
+                    imgs.map(msg =>{
+                        return(`<div  class="open_image img_galery" data-img="${msg.img}">
+                            <img class="open_image" data-img="${msg.img}" src="${msg.img ?? ''}" alt="">
+                        </div>`)
+                    }).join('')
+                }
+            </div>
         </div>
     </div>`
 }
@@ -269,9 +330,6 @@ const user_info = (user, contact) =>{
 const add_update_contact = async() => {
     let number = document.getElementById('btn_open_ud').dataset.number
     let name = document.getElementById('name_ud').value
-
-    console.log(number);
-    console.log(name);
 
     let datas = {name: name, number: number}
 

@@ -12,7 +12,8 @@ module.exports = (app) =>{
 
     app.get('/user', async(req, res)=>{
         const my_user = req.user;
-        const user = await User.findOne({_id: my_user.id}).populate('rooms').populate('contacts');
+        console.log(my_user._id);
+        const user = await User.findOne({_id: my_user._id}).populate('rooms').populate('contacts');
         res.json(user)
     })
 
@@ -114,5 +115,10 @@ module.exports = (app) =>{
             await user.save()
             return res.json({msg: 'Este contacto se ha agregado en tu lista exitosamente...'})
         }
+    })
+
+    app.post('/user-information', (req, res) =>{
+        console.log(req.body);
+        res.json({msg:'success'})
     })
 }

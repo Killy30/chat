@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const passport = require('passport')
-const os = require('os')
 
 module.exports = (app) => {
     router.get('/', async (req , res) => {
@@ -25,14 +24,7 @@ module.exports = (app) => {
     }));
     
     router.get('/chat', estaAutenticado, (req, res) => {
-        var user = req.user;
-        let systemData = {}
-        systemData['platform'] = os.platform()
-        systemData['hostname'] = os.hostname()
-        systemData['version'] = os.version()
-        systemData['userInfo'] = os.userInfo()
-        systemData['re'] = os.type()
-        console.log(systemData);
+        const user = req.user;
         res.render('main', { user })
     })
 

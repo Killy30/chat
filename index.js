@@ -52,8 +52,6 @@ require('./routes/router')(app)
 
 require('./api/apis')(app)
 
-require('./models/system')(app)
-
 
 //socket
 io.on('connection', async(socket) => {

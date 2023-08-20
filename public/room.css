@@ -19,6 +19,17 @@ body{
     place-items: center;
 }
 
+.color_person{
+    filter: invert(13%) sepia(89%) saturate(2%) hue-rotate(359deg) brightness(98%) contrast(84%);
+}
+.color_person_blue{
+    filter: invert(28%) sepia(88%) saturate(4522%) hue-rotate(204deg) brightness(111%) contrast(101%);
+}
+
+.img_class{
+    width: 80%;
+}
+
 .box_chat{
     width: 90%;
     height: 95%;
@@ -46,10 +57,10 @@ body{
     background-color: var(--color_wqe);
 }
 .img_profile img{
-    /* font-size: 30px; */
     width: 80%;
     color: var(--color_blue);
 }
+
 .name_profile{
     margin-left: 10px;
     display: flex;
@@ -77,6 +88,7 @@ body{
 .card_show_more{
     display: none;
     position: absolute;
+    width: 200px;
     right: 0px;
     top: 45px;
     padding: 15px 20px;
@@ -103,6 +115,10 @@ body{
 }
 .menu_list:hover{
     color: var(--color_blue);
+}
+.menu_list img{
+    width: 30px;
+    height: 30px;
 }
 
 
@@ -142,11 +158,17 @@ body{
 .card_users_list{
     width: 100%;
     height: calc(100% - 70px);
-    padding: 15px;
+}
+.gtp{
+    width: 100%;
+    height: 100%;
 }
 #users_list{
     width: 100%;
-    height: 100%;
+    height: 100%;  
+    padding: 15px; 
+    padding-bottom: 100px;
+    overflow-y:auto;
 }
 
 
@@ -244,7 +266,13 @@ body{
     font-size: 250px;
     color: var(--color_blue);
 }
-
+.welcome_mobile{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
 .hide{
     display: none;
 }
@@ -363,6 +391,8 @@ textarea{
     outline: none;
 }
 .btn_send_msg{
+    width: 50px;
+    height: 50px;
     padding: 6px;
     border-radius: 50%;
     background-color: var(--color_wqe);
@@ -440,48 +470,6 @@ textarea{
 }
 
 
-/* user info */
-.close_card_user_info{
-    cursor: pointer;
-}
-.close_card_user_info:hover{
-    color: #e71010ca;
-}
-.card_imgUserProfile_info{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-.imgUserProfile_info{
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    overflow: hidden;
-    background-color: var(--color_wqe);
-    display: grid;
-    place-items: center;
-    margin-top: 60px;
-    margin-bottom: 20px;
-}
-.imgUserProfile_info img {
-    width: 80%;
-    color: var(--color_blue);
-    font-size: 100px;
-}
-.info_user_name{
-    margin: 0;
-    text-align: center;
-    font-size: 25px;
-    font-weight: 600;
-
-}
-.info_user_number{
-    margin: 0;
-    text-align: center;
-    font-size: 16px;
-    color: #686868;
-
-}
 
 .btn_back{
     display: none;
@@ -519,6 +507,85 @@ textarea{
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+
+
+/* user info */
+.info_box{
+    width: 100%;
+    height: 100%;
+}
+.close_card_user_info{
+    cursor: pointer;
+}
+.close_card_user_info:hover{
+    color: #e71010ca;
+}
+.card_imgUserProfile_info{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.imgUserProfile_info{
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--color_wqe);
+    display: grid;
+    place-items: center;
+    margin-bottom: 10px;
+}
+.imgUserProfile_info img {
+    width: 80%;
+    color: var(--color_blue);
+    font-size: 100px;
+}
+.info_user_name{
+    margin: 0;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+
+}
+.info_user_number{
+    margin: 0;
+    text-align: center;
+    font-size: 16px;
+    color: #686868;
+
+}
+/* contact */
+.head_contact{
+    width: 100%;
+    height: 40%;
+}
+.body_contact{
+    padding: 15px;
+    height: 60%;
+}
+
+
+/* galery */
+.galery{
+    width: 100%;
+    height: calc(100% - 120px);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+    overflow-y: auto;
+}
+.img_galery{
+    /* width: 50%; */
+    height: 185px;
+    overflow: hidden;
+
+}
+.img_galery img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 @media(max-width: 1500px){
@@ -571,9 +638,6 @@ textarea{
         position:sticky;
         top: 0%;
         /* z-index: 100; */
-    }
-    .chatboxmessage{
-        /* margin-top: 55px; */
     }
     .chatboxfooter{
         position: fixed;
@@ -652,5 +716,10 @@ textarea{
         height: 100%;
         /* background-color: #191919; */
     }
+    .color_person{
+        filter: invert(100%) sepia(99%) saturate(14%) hue-rotate(194deg) brightness(104%) contrast(100%);
+    }
+
+
 }
 
